@@ -1,228 +1,115 @@
 package br.com.ecowatt
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.*
-import br.com.ecowatt.dto.auth.LoginRequest
-import br.com.ecowatt.dto.auth.SignupRequest
-import br.com.ecowatt.ui.components.navigation.EcoWattTopBar
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import br.com.ecowatt.models.user.UserSampleData
+import br.com.ecowatt.ui.components.EcoWattTopBar
 import br.com.ecowatt.ui.navigation.Screen
 import br.com.ecowatt.ui.screens.HomeScreen
-import br.com.ecowatt.ui.screens.auth.LoginScreen
-import br.com.ecowatt.ui.screens.auth.SignupScreen
-import br.com.ecowatt.ui.screens.auth.WelcomeScreen
-import br.com.ecowatt.ui.screens.devices.DeviceDetailsScreen
-import br.com.ecowatt.ui.screens.devices.EnergyConsumptionScreen
-import br.com.ecowatt.ui.screens.devices.FormDeviceScreen
+import br.com.ecowatt.ui.screens.onboarding.SignInScreen
+import br.com.ecowatt.ui.screens.onboarding.SignUpScreen
+import br.com.ecowatt.ui.screens.onboarding.WelcomeScreen
 import br.com.ecowatt.ui.theme.EcoWattTheme
 import br.com.ecowatt.ui.viewmodel.AuthViewModel
-import br.com.ecowatt.ui.viewmodel.DeviceViewModel
 
-class MainActivity : ComponentActivity() {
-
-    private val deviceViewModel = viewModels<DeviceViewModel>()
-    private val authViewModel = viewModels<AuthViewModel>()
+internal class MainActivity : ComponentActivity() {
+    private val authViewModel by viewModels<AuthViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge()
         setContent {
             EcoWattTheme {
-                EcoWattApp(
-                    deviceViewModel = deviceViewModel.value,
-                    auth = authViewModel.value
-                )
-            }
-        }
-    }
+                val navController = rememberNavController()
 
-    @Composable
-    fun EcoWattApp(
-        navController: NavHostController = rememberNavController(),
-        deviceViewModel: DeviceViewModel,
-        auth: AuthViewModel
-    ) {
-        val backStackEntry = navController.currentBackStackEntryAsState()
-        val currentScreen =
-            Screen.valueOf(backStackEntry.value?.destination?.route ?: Screen.HOME.name)
+                NavHost(
+                    navController = navController,
+                    startDestination = Screen.WelcomeScreen.route
+                ) {
+                    composable(route = Screen.WelcomeScreen.route) {
+                        Scaffold { innerPadding ->
+                            WelcomeScreen(
+                                modifier = Modifier
+                                    .padding(innerPadding)
+                                    .padding(16.dp),
+                                onSignUp = { navController.navigate(Screen.SignUpScreen.route) },
+                                onSignIn = { navController.navigate(Screen.SignInScreen.route) }
+                            )
+                        }
+                    }
 
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding(),
-            topBar = {
-                EcoWattTopBar(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    canNavigateBack = navController.previousBackStackEntry != null,
-                    navigateUp = { navController.navigateUp() },
-                    currentScreen = currentScreen
-                )
-            }
-        ) { innerPadding ->
-            NavHost(
-                navController = navController,
-                startDestination = Screen.ON_BOARDING.name,
-                modifier = Modifier.padding(innerPadding)
-            ) {
-                navigation(
-                    route = Screen.ON_BOARDING.name,
-                    startDestination = Screen.WELCOME.name
-                ) {
-                    composable(route = Screen.WELCOME.name) {
-                        WelcomeScreen(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp),
-                            onSignup = { navController.navigate(Screen.SIGNUP.name) },
-                            onLogin = { navController.navigate(Screen.LOGIN.name) }
-                        )
-                    }
-                    
-                    composable(route = Screen.SIGNUP.name) {
-                        SignupScreen(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp),
-                            onSignup = { user: SignupRequest ->
-                                auth.signUp(
-                                    user = user,
-                                    onFailure = {
-                                        Toast.makeText(
-                                            this@MainActivity,
-                                            getString(R.string.toast_message_signup_failed),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    },
-                                    onSuccess = {
-                                        navController.popBackStack(
-                                            route = Screen.SIGNUP.name,
-                                            inclusive = true
-                                        )
-                                        navController.navigate(Screen.HOME.name)
-                                    }
+                    composable(route = Screen.SignUpScreen.route) {
+                        Scaffold(
+                            topBar = {
+                                EcoWattTopBar(
+                                    title = stringResource(R.string.screen_title_signup),
+                                    canNavigateBack = true,
+                                    goBackFn = { navController.navigateUp() }
                                 )
                             }
-                        )
+                        ) { innerPadding ->
+                            SignUpScreen(
+                                modifier = Modifier
+                                    .padding(innerPadding)
+                                    .padding(16.dp),
+                                onSignUp = {
+                                    authViewModel.signUp(it, onSuccess = {
+                                        runOnUiThread {
+                                            navController.navigate(Screen.HomeScreen.route)
+                                        }
+                                    })
+                                }
+                            )
+                        }
                     }
-                    
-                    composable(route = Screen.LOGIN.name) {
-                        LoginScreen(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp),
-                            onLogin = { user: LoginRequest ->
-                                auth.login(
-                                    user = user,
-                                    onFailure = {
-                                        Toast.makeText(
-                                            this@MainActivity,
-                                            getString(R.string.toast_message_login_failed),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    },
-                                    onSuccess = {
-                                        navController.popBackStack(
-                                            route = Screen.LOGIN.name,
-                                            inclusive = true
-                                        )
-                                        navController.navigate(Screen.HOME.name)
-                                    }
+
+                    composable(route = Screen.SignInScreen.route) {
+                        Scaffold(
+                            topBar = {
+                                EcoWattTopBar(
+                                    title = stringResource(R.string.screen_title_signin),
+                                    canNavigateBack = true,
+                                    goBackFn = { navController.navigateUp() }
                                 )
                             }
-                        )
+                        ) { innerPadding ->
+                            SignInScreen(
+                                modifier = Modifier
+                                    .padding(innerPadding)
+                                    .padding(16.dp),
+                                onSignIn = {
+                                    authViewModel.signIn(it, onSuccess = {
+                                        runOnUiThread {
+                                            navController.navigate(Screen.HomeScreen.route)
+                                        }
+                                    })
+                                }
+                            )
+                        }
                     }
-                }
-                
-                composable(route = Screen.HOME.name) {
-                    auth.currentUser.value?.let { user ->
-                        HomeScreen(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp),
-                            user = user,
-                            onEnergyConsumptionClick = { navController.navigate(Screen.DEVICES.name) }
-                        )
-                    }
-                }
-                
-                navigation(
-                    route = Screen.DEVICES.name,
-                    startDestination = Screen.ENERGY_CONSUMPTION.name
-                ) {
-                    composable(route = Screen.ENERGY_CONSUMPTION.name) {
-                        EnergyConsumptionScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            devices = remember { deviceViewModel.devices },
-                            onClickDevice = {
-                                deviceViewModel.currentDevice.value = it
-                                navController.navigate(Screen.DEVICE_DETAILS.name)
-                            },
-                            onDeleteDevice = { deviceId ->
-                                deviceViewModel.deleteDevice(deviceId)
-                                Toast.makeText(
-                                    this@MainActivity,
-                                    getString(R.string.toast_message_device_deleted),
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            },
-                            onCreateDevice = { navController.navigate(Screen.REGISTER_DEVICE.name) }
-                        )
-                    }
-                    
-                    composable(route = Screen.REGISTER_DEVICE.name) {
-                        FormDeviceScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            onSave = { filledDevice ->
-                                deviceViewModel.newDevice(filledDevice)
-                                navController.popBackStack()
-                                Toast.makeText(
-                                    this@MainActivity,
-                                    getString(R.string.toast_message_device_saved),
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                        )
-                    }
-                    
-                    composable(route = Screen.DEVICE_DETAILS.name) {
-                        DeviceDetailsScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            device = deviceViewModel.currentDevice.value,
-                            onClickEditDevice = { navController.navigate(Screen.UPDATE_DEVICE.name) }
-                        )
-                    }
-                    
-                    composable(route = Screen.UPDATE_DEVICE.name) {
-                        val currentDevice = deviceViewModel.currentDevice
-                        FormDeviceScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            device = currentDevice,
-                            onSave = { filledDevice ->
-                                deviceViewModel.updateDevice(
-                                    currentDevice.value.id,
-                                    filledDevice
-                                )
-                                navController.popBackStack()
-                                Toast.makeText(
-                                    this@MainActivity,
-                                    getString(R.string.toast_message_device_updated),
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                        )
+
+                    composable(route = Screen.HomeScreen.route) {
+                        Scaffold { innerPadding ->
+                            HomeScreen(
+                                modifier = Modifier
+                                    .padding(innerPadding)
+                                    .padding(16.dp),
+                                user = authViewModel.currentUser ?: UserSampleData.user,
+                                onEnergyConsumptionClick = { }
+                            )
+                        }
                     }
                 }
             }

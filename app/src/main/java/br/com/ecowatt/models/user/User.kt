@@ -1,12 +1,22 @@
 package br.com.ecowatt.models.user
 
-/**
- * Data class representing a user.
- *
- * @property displayName The display name of the user.
- * @property email The email of the user.
- */
 data class User(
-    val displayName: String,
+    val id: String,
+    val name: String,
     val email: String
-)
+) {
+//    fun toSignUpRequest(password: String): SignUpRequest {
+//        return SignUpRequest(
+//            displayName = name,
+//            email = email,
+//            password = password
+//        )
+//    }
+//
+//    fun toSignInRequest(password: String): SignInRequest {
+//        return SignInRequest(
+//            email = email,
+//            password = password
+//        )
+//    }
+}

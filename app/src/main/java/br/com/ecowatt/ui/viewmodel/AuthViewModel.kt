@@ -1,88 +1,57 @@
 package br.com.ecowatt.ui.viewmodel
 
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.ecowatt.dto.auth.LoginRequest
-import br.com.ecowatt.dto.auth.LoginResponse
-import br.com.ecowatt.dto.auth.SignupRequest
-import br.com.ecowatt.dto.auth.SignupResponse
+import br.com.ecowatt.data.dto.request.SignInRequest
+import br.com.ecowatt.data.dto.request.SignUpRequest
+import br.com.ecowatt.data.dto.response.SignInResponse
+import br.com.ecowatt.data.dto.response.SignUpResponse
+import br.com.ecowatt.data.repo.AuthRepository
 import br.com.ecowatt.models.user.User
-import br.com.ecowatt.repository.AuthRepository
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel for handling user authentication.
- */
-class AuthViewModel : ViewModel() {
+internal class AuthViewModel() : ViewModel() {
     private val repo = AuthRepository()
-    private val mainHandler = Handler(Looper.getMainLooper())
 
     /**
      * The current authenticated user.
      * Might be null.
      */
-    val currentUser: MutableState<User?> = mutableStateOf(null)
+    var currentUser: User? by mutableStateOf(null)
+        private set
 
-    /**
-     * Signs up a new user.
-     *
-     * @param user The sign-up request data.
-     * @param onSuccess Callback function to handle successful sign-up.
-     * @param onFailure Callback function to handle sign-up failure.
-     * @see AuthRepository
-     * @see SignupRequest
-     * @see SignupResponse
-     */
     fun signUp(
-        user: SignupRequest,
-        onSuccess: () -> Unit,
-        onFailure: () -> Unit
+        user: SignUpRequest,
+        onSuccess: () -> Unit = {},
+        onFailure: (e: Exception) -> Unit = {}
     ) {
         viewModelScope.launch {
             repo.signUp(
                 user = user,
-                onRequestFailure = {
-                    Log.e("ECOWATT", "AUTH ERROR: ${it.message}")
-                    mainHandler.post { onFailure() }
-                },
-                onRequestSuccess = { resp: SignupResponse ->
-                    currentUser.value = resp.toUser()
-                    mainHandler.post { onSuccess() }
+                onRequestFailure = onFailure,
+                onRequestSuccess = { resp: SignUpResponse ->
+                    currentUser = resp.toUser()
+                    onSuccess()
                 }
             )
         }
     }
 
-    /**
-     * Logs in an existing user.
-     *
-     * @param user The login request data.
-     * @param onSuccess Callback function to handle successful login.
-     * @param onFailure Callback function to handle login failure.
-     * @see AuthRepository
-     * @see LoginRequest
-     * @see LoginResponse
-     */
-    fun login(
-        user: LoginRequest,
-        onSuccess: () -> Unit,
-        onFailure: () -> Unit
+    fun signIn(
+        user: SignInRequest,
+        onSuccess: () -> Unit = {},
+        onFailure: (e: Exception) -> Unit = {}
     ) {
         viewModelScope.launch {
-            repo.login(
+            repo.signIn(
                 user = user,
-                onRequestFailure = {
-                    Log.e("ECOWATT", "AUTH ERROR: ${it.message}")
-                    mainHandler.post { onFailure() }
-                },
-                onRequestSuccess = { resp: LoginResponse ->
-                    currentUser.value = resp.toUser()
-                    mainHandler.post { onSuccess() }
+                onRequestFailure = onFailure,
+                onRequestSuccess = { resp: SignInResponse ->
+                    currentUser = resp.toUser()
+                    onSuccess()
                 }
             )
         }

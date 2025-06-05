@@ -1,8 +1,9 @@
 package br.com.ecowatt.models.user
 
-object UserSampleData {
-    val gabriel = User(
-        displayName = "Gabriel",
-        email = "gabriel@gmail.com"
+internal object UserSampleData {
+    val user = User(
+        id = "01",
+        name = "John Doe",
+        email = "john.doe@example.com"
     )
 }

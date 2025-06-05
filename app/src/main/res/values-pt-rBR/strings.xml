@@ -6,13 +6,13 @@
     <string name="energy_consumption_per_minute">%1$s %2$s/minuto</string>
     <string name="device_info_consumption_reports_text">%1$s relatórios de consumo</string>
     <string name="consumption_limit">Limite de consumo: %1$s %2$s</string>
-    
+
     <string name="screen_title_signup">Cadastro</string>
-    <string name="screen_title_login">Login</string>
+    <string name="screen_title_signin">Login</string>
     <string name="screen_title_home">Início</string>
     <string name="screen_title_register_device">Cadastrar dispositivo</string>
     <string name="screen_title_update_device">Atualizar dispositivo</string>
-    
+
     <string name="empty_device_list_alert_title">Lista vazia</string>
     <string name="empty_device_list_alert_subtitle">Comece adicionando um novo dispositivo à lista</string>
 
@@ -26,16 +26,16 @@
     <string name="form_label_user_password">Senha</string>
 
     <string name="btn_submit_text">Enviar</string>
-    <string name="btn_login_text">Entrar</string>
+    <string name="btn_signin_text">Entrar</string>
     <string name="btn_signup_text">Cadastrar-se</string>
     <string name="btn_device_list_text">Dispositivos</string>
-    
+
     <string name="toast_message_signup_failed">Falha no cadastro!</string>
-    <string name="toast_message_login_failed">Falha no login!</string>
+    <string name="toast_message_signin_failed">Falha no login!</string>
     <string name="toast_message_device_saved">Dispositivo salvo!</string>
     <string name="toast_message_device_updated">Dispositivo atualizado!</string>
     <string name="toast_message_device_deleted">Dispositivo excluído!</string>
-    
+
     <string name="ic_description_app_icon">Ícone do aplicativo</string>
     <string name="ic_description_go_back">Voltar</string>
     <string name="ic_description_consumption_level">Ícone do nível de consumo</string>
