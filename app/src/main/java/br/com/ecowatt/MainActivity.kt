@@ -1,6 +1,7 @@
 package br.com.ecowatt
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,14 +18,17 @@ import br.com.ecowatt.models.user.UserSampleData
 import br.com.ecowatt.ui.components.EcoWattTopBar
 import br.com.ecowatt.ui.navigation.Screen
 import br.com.ecowatt.ui.screens.HomeScreen
+import br.com.ecowatt.ui.screens.devices.DevicesListScreen
 import br.com.ecowatt.ui.screens.onboarding.SignInScreen
 import br.com.ecowatt.ui.screens.onboarding.SignUpScreen
 import br.com.ecowatt.ui.screens.onboarding.WelcomeScreen
 import br.com.ecowatt.ui.theme.EcoWattTheme
 import br.com.ecowatt.ui.viewmodel.AuthViewModel
+import br.com.ecowatt.ui.viewmodel.DevicesViewModel
 
 internal class MainActivity : ComponentActivity() {
     private val authViewModel by viewModels<AuthViewModel>()
+    private val devicesViewModel by viewModels<DevicesViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,7 +111,30 @@ internal class MainActivity : ComponentActivity() {
                                     .padding(innerPadding)
                                     .padding(16.dp),
                                 user = authViewModel.currentUser ?: UserSampleData.user,
-                                onEnergyConsumptionClick = { }
+                                onEnergyConsumptionClick = {
+                                    navController.navigate(Screen.DevicesListScreen.route)
+                                }
+                            )
+                        }
+                    }
+
+                    composable(route = Screen.DevicesListScreen.route) {
+                        Scaffold { innerPadding ->
+                            devicesViewModel.loadDevices(
+                                onRequestSuccess = {},
+                                onRequestFailure = { e ->
+                                    runOnUiThread {
+                                        Toast.makeText(
+                                            this@MainActivity,
+                                            e.message,
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                            )
+                            DevicesListScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                devices = devicesViewModel.devicesList
                             )
                         }
                     }
