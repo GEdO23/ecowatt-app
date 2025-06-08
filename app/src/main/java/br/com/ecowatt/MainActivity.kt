@@ -68,7 +68,7 @@ internal class MainActivity : ComponentActivity() {
                                 modifier = Modifier
                                     .padding(innerPadding)
                                     .padding(16.dp),
-                                onSignUp = {
+                                onSubmit = {
                                     authViewModel.signUp(it, onSuccess = {
                                         runOnUiThread {
                                             navController.navigate(Screen.HomeScreen.route)
@@ -93,7 +93,7 @@ internal class MainActivity : ComponentActivity() {
                                 modifier = Modifier
                                     .padding(innerPadding)
                                     .padding(16.dp),
-                                onSignIn = {
+                                onSubmit = {
                                     authViewModel.signIn(it, onSuccess = {
                                         runOnUiThread {
                                             navController.navigate(Screen.HomeScreen.route)
@@ -111,7 +111,7 @@ internal class MainActivity : ComponentActivity() {
                                     .padding(innerPadding)
                                     .padding(16.dp),
                                 user = authViewModel.currentUser ?: UserSampleData.user,
-                                onEnergyConsumptionClick = {
+                                onDevicesListClick = {
                                     navController.navigate(Screen.DevicesListScreen.route)
                                 }
                             )

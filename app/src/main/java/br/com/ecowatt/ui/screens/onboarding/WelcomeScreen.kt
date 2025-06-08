@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -12,9 +13,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.ecowatt.R
-import br.com.ecowatt.ui.components.EcowattButton
 import br.com.ecowatt.ui.components.LargeTitle
 import br.com.ecowatt.ui.components.SubTitle
+import br.com.ecowatt.ui.components.form.EcowattButton
 
 @Composable
 internal fun WelcomeScreen(
@@ -32,15 +33,13 @@ internal fun WelcomeScreen(
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            EcowattButton(
-                text = stringResource(R.string.btn_signup_text),
-                onClick = onSignUp
-            )
+            EcowattButton(onClick = onSignUp) {
+                Text(text = stringResource(R.string.btn_signup_text))
+            }
 
-            EcowattButton(
-                text = stringResource(R.string.btn_signin_text),
-                onClick = onSignIn
-            )
+            EcowattButton(onClick = onSignIn) {
+                Text(text = stringResource(R.string.btn_signin_text))
+            }
         }
     }
 }

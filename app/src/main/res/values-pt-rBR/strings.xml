@@ -28,7 +28,7 @@
     <string name="btn_submit_text">Enviar</string>
     <string name="btn_signin_text">Entrar</string>
     <string name="btn_signup_text">Cadastrar-se</string>
-    <string name="btn_device_list_text">Dispositivos</string>
+    <string name="btn_devices_list_text">Dispositivos</string>
 
     <string name="toast_message_signup_failed">Falha no cadastro!</string>
     <string name="toast_message_signin_failed">Falha no login!</string>
