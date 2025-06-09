@@ -1,7 +1,6 @@
 package br.com.ecowatt
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -18,6 +16,7 @@ import br.com.ecowatt.models.user.UserSampleData
 import br.com.ecowatt.ui.components.EcoWattTopBar
 import br.com.ecowatt.ui.navigation.Screen
 import br.com.ecowatt.ui.screens.HomeScreen
+import br.com.ecowatt.ui.screens.devices.DeviceRegistrationScreen
 import br.com.ecowatt.ui.screens.devices.DevicesListScreen
 import br.com.ecowatt.ui.screens.onboarding.SignInScreen
 import br.com.ecowatt.ui.screens.onboarding.SignUpScreen
@@ -45,9 +44,7 @@ internal class MainActivity : ComponentActivity() {
                     composable(route = Screen.WelcomeScreen.route) {
                         Scaffold { innerPadding ->
                             WelcomeScreen(
-                                modifier = Modifier
-                                    .padding(innerPadding)
-                                    .padding(16.dp),
+                                modifier = Modifier.padding(innerPadding),
                                 onSignUp = { navController.navigate(Screen.SignUpScreen.route) },
                                 onSignIn = { navController.navigate(Screen.SignInScreen.route) }
                             )
@@ -65,9 +62,7 @@ internal class MainActivity : ComponentActivity() {
                             }
                         ) { innerPadding ->
                             SignUpScreen(
-                                modifier = Modifier
-                                    .padding(innerPadding)
-                                    .padding(16.dp),
+                                modifier = Modifier.padding(innerPadding),
                                 onSubmit = {
                                     authViewModel.signUp(it, onSuccess = {
                                         runOnUiThread {
@@ -90,9 +85,7 @@ internal class MainActivity : ComponentActivity() {
                             }
                         ) { innerPadding ->
                             SignInScreen(
-                                modifier = Modifier
-                                    .padding(innerPadding)
-                                    .padding(16.dp),
+                                modifier = Modifier.padding(innerPadding),
                                 onSubmit = {
                                     authViewModel.signIn(it, onSuccess = {
                                         runOnUiThread {
@@ -107,9 +100,7 @@ internal class MainActivity : ComponentActivity() {
                     composable(route = Screen.HomeScreen.route) {
                         Scaffold { innerPadding ->
                             HomeScreen(
-                                modifier = Modifier
-                                    .padding(innerPadding)
-                                    .padding(16.dp),
+                                modifier = Modifier.padding(innerPadding),
                                 user = authViewModel.currentUser ?: UserSampleData.user,
                                 onDevicesListClick = {
                                     navController.navigate(Screen.DevicesListScreen.route)
@@ -119,22 +110,36 @@ internal class MainActivity : ComponentActivity() {
                     }
 
                     composable(route = Screen.DevicesListScreen.route) {
+                        devicesViewModel.loadDevices()
+                        
                         Scaffold { innerPadding ->
-                            devicesViewModel.loadDevices(
-                                onRequestSuccess = {},
-                                onRequestFailure = { e ->
-                                    runOnUiThread {
-                                        Toast.makeText(
-                                            this@MainActivity,
-                                            e.message,
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                }
-                            )
                             DevicesListScreen(
                                 modifier = Modifier.padding(innerPadding),
-                                devices = devicesViewModel.devicesList
+                                devices = devicesViewModel.devicesList,
+                                onFabClick = { navController.navigate(Screen.DeviceRegistrationScreen.route) }
+                            )
+                        }
+                    }
+
+                    composable(route = Screen.DeviceRegistrationScreen.route) {
+                        Scaffold(
+                            topBar = {
+                                EcoWattTopBar(
+                                    title = stringResource(R.string.screen_title_register_device),
+                                    canNavigateBack = true,
+                                    goBackFn = { navController.navigateUp() }
+                                )
+                            }
+                        ) { innerPadding ->
+                            DeviceRegistrationScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                onSubmit = {
+                                    devicesViewModel.registerDevice(it, onRequestSuccess = {
+                                        runOnUiThread {
+                                            navController.navigateUp()
+                                        }
+                                    })
+                                }
                             )
                         }
                     }

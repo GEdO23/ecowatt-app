@@ -2,6 +2,7 @@ package br.com.ecowatt.ui.screens.onboarding
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
@@ -23,24 +24,24 @@ import br.com.ecowatt.ui.theme.EcoWattTheme
 @Composable
 internal fun SignUpScreen(
     modifier: Modifier = Modifier,
-    onSubmit: (SignUpRequest) -> Unit
+    onSubmit: (SignUpRequest) -> Unit = {}
 ) {
     val username = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.padding(16.dp)) {
         AuthForm(
             onSubmit = {
                 val request = SignUpRequest(username.value, email.value, password.value)
                 onSubmit(request)
             },
             submitLabel = stringResource(R.string.btn_signup_text),
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.fillMaxSize()
         ) {
-            UsernameField(username)
-            EmailField(email)
-            PasswordField(password)
+            UsernameField(username, Modifier.fillMaxWidth())
+            EmailField(email, Modifier.fillMaxWidth())
+            PasswordField(password, Modifier.fillMaxWidth())
         }
     }
 }
@@ -50,15 +51,8 @@ internal fun SignUpScreen(
 @Composable
 private fun SignUpScreenPreview() {
     EcoWattTheme {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-        ) { innerPadding ->
-            SignUpScreen(
-                modifier = Modifier.padding(innerPadding),
-                onSubmit = {}
-            )
+        Scaffold(modifier = Modifier.statusBarsPadding()) { innerPadding ->
+            SignUpScreen(modifier = Modifier.padding(innerPadding))
         }
     }
 }

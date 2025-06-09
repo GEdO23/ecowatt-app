@@ -1,6 +1,7 @@
 package br.com.ecowatt.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
+import br.com.ecowatt.data.dto.request.DeviceRegistrationRequest
 import br.com.ecowatt.data.repo.DeviceRepository
 import br.com.ecowatt.models.device.Device
 
@@ -9,8 +10,8 @@ internal class DevicesViewModel : ViewModel() {
     val devicesList: MutableList<Device> = mutableListOf()
 
     fun loadDevices(
-        onRequestSuccess: () -> Unit,
-        onRequestFailure: (Exception) -> Unit
+        onRequestSuccess: () -> Unit = {},
+        onRequestFailure: (Exception) -> Unit = {}
     ) {
         repo.getAllDevices(
             onRequestSuccess = { hashmap ->
@@ -22,6 +23,18 @@ internal class DevicesViewModel : ViewModel() {
                 onRequestSuccess()
             },
             onRequestFailure = onRequestFailure
+        )
+    }
+
+    fun registerDevice(
+        device: DeviceRegistrationRequest,
+        onRequestSuccess: () -> Unit = {},
+        onRequestFailure: (Exception) -> Unit = {}
+    ) {
+        repo.registerDevice(
+            device = device,
+            onRequestFailure = onRequestFailure,
+            onRequestSuccess = { onRequestSuccess() }
         )
     }
 }

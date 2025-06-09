@@ -2,6 +2,7 @@ package br.com.ecowatt.ui.screens.onboarding
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
@@ -22,22 +23,22 @@ import br.com.ecowatt.ui.theme.EcoWattTheme
 @Composable
 internal fun SignInScreen(
     modifier: Modifier = Modifier,
-    onSubmit: (SignInRequest) -> Unit
+    onSubmit: (SignInRequest) -> Unit = {}
 ) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.padding(16.dp)) {
         AuthForm(
             onSubmit = {
                 val request = SignInRequest(email.value, password.value)
                 onSubmit(request)
             },
             submitLabel = stringResource(R.string.btn_signin_text),
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.fillMaxSize()
         ) {
-            EmailField(email)
-            PasswordField(password)
+            EmailField(email, Modifier.fillMaxWidth())
+            PasswordField(password, Modifier.fillMaxWidth())
         }
     }
 }
@@ -46,15 +47,8 @@ internal fun SignInScreen(
 @Composable
 private fun SignInScreenPreview() {
     EcoWattTheme {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-        ) { innerPadding ->
-            SignInScreen(
-                modifier = Modifier.padding(innerPadding),
-                onSubmit = {}
-            )
+        Scaffold(modifier = Modifier.statusBarsPadding()) { innerPadding ->
+            SignInScreen(modifier = Modifier.padding(innerPadding))
         }
     }
 }

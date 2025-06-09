@@ -37,7 +37,7 @@ object DeviceFormFields {
     fun TypeField(deviceType: MutableState<String>, modifier: Modifier = Modifier) {
         CustomTextField(
             value = deviceType,
-            labelRes = R.string.form_label_device_location,
+            labelRes = R.string.form_label_device_type,
             modifier = modifier,
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next

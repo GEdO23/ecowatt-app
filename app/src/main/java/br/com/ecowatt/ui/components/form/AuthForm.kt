@@ -2,6 +2,7 @@ package br.com.ecowatt.ui.components.form
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -14,12 +15,12 @@ fun AuthForm(
     modifier: Modifier = Modifier,
     fields: @Composable () -> Unit
 ) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(32.dp)) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.SpaceBetween) {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             fields()
         }
 
-        EcowattButton(onClick = onSubmit) {
+        EcowattButton(onClick = onSubmit, modifier = Modifier.fillMaxWidth()) {
             ButtonText(text = submitLabel)
         }
     }

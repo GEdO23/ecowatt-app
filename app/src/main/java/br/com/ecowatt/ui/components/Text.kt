@@ -11,8 +11,8 @@ import androidx.compose.ui.unit.sp
 @Composable
 internal fun LargeTitle(
     text: String,
-    fontSize: TextUnit = 24.sp,
-    fontWeight: FontWeight = FontWeight.Normal,
+    fontSize: TextUnit = 48.sp,
+    fontWeight: FontWeight = FontWeight.SemiBold,
     letterSpacing: TextUnit = 0.5.sp,
     lineHeight: TextUnit = 48.sp * 1.2
 ) {
@@ -28,8 +28,8 @@ internal fun LargeTitle(
 @Composable
 fun Title(
     text: String,
-    fontSize: TextUnit = 24.sp,
-    fontWeight: FontWeight = FontWeight.Normal,
+    fontSize: TextUnit = 32.sp,
+    fontWeight: FontWeight = FontWeight.SemiBold,
 ) {
     Text(
         text = text,

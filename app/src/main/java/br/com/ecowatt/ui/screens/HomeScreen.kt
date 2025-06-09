@@ -3,7 +3,10 @@ package br.com.ecowatt.ui.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,33 +19,40 @@ import br.com.ecowatt.models.user.UserSampleData
 import br.com.ecowatt.ui.components.SubTitle
 import br.com.ecowatt.ui.components.Title
 import br.com.ecowatt.ui.components.form.EcowattButton
+import br.com.ecowatt.ui.theme.EcoWattTheme
 
 @Composable
 internal fun HomeScreen(
     modifier: Modifier = Modifier,
     user: User,
-    onDevicesListClick: () -> Unit
+    onDevicesListClick: () -> Unit = {}
 ) {
-    Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Title(stringResource(R.string.greetings, user.name))
             SubTitle(stringResource(R.string.welcome_back))
         }
 
-        EcowattButton(onClick = onDevicesListClick) {
+        EcowattButton(onClick = onDevicesListClick, modifier = Modifier.fillMaxWidth()) {
             Text(text = stringResource(R.string.btn_devices_list_text))
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showSystemUi = true)
 @Composable
 private fun HomeScreenPreview() {
-    HomeScreen(
-        Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        user = UserSampleData.user,
-        onDevicesListClick = { }
-    )
+    EcoWattTheme {
+        Scaffold(modifier = Modifier.statusBarsPadding()) { innerPadding ->
+            HomeScreen(
+                modifier = Modifier.padding(innerPadding),
+                user = UserSampleData.user
+            )
+        }
+    }
 }
