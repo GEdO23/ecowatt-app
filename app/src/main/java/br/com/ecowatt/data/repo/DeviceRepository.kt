@@ -1,12 +1,12 @@
 package br.com.ecowatt.data.repo
 
+import android.util.Log
 import br.com.ecowatt.data.dto.request.DeviceRegistrationRequest
 import br.com.ecowatt.data.dto.response.DeviceReadResponse
 import br.com.ecowatt.data.dto.response.DeviceRegistrationResponse
 import br.com.ecowatt.data.repo.Constants.applicationJson
 import br.com.ecowatt.data.repo.Constants.httpClient
 import com.google.gson.Gson
-import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import okhttp3.Call
 import okhttp3.Callback
@@ -18,10 +18,7 @@ import java.io.IOException
 internal class DeviceRepository {
     private val gson = Gson()
 
-    fun getAllDevices(
-        onRequestFailure: (Exception) -> Unit,
-        onRequestSuccess: (HashMap<String, DeviceReadResponse>) -> Unit
-    ) {
+    fun getAllDevices(onRequestSuccess: (HashMap<String, DeviceReadResponse>) -> Unit = {}) {
         val request = Request.Builder()
             .url("https://ecowatt-database-default-rtdb.firebaseio.com/devices.json")
             .get()
@@ -29,28 +26,21 @@ internal class DeviceRepository {
 
         val response = object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                onRequestFailure(e)
+                e.printStackTrace()
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val localBody = response.body?.string() ?: ""
+                response.use {
+                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
 
-                try {
-                    val jsonElement = JsonParser.parseString(localBody)
-
-                    if (!jsonElement.isJsonObject) {
-                        onRequestFailure(Exception("Unexpected response format: $localBody"))
-                        return
-                    }
+                    val localBody = response.body?.string() ?: ""
 
                     val typeToken =
                         object : TypeToken<HashMap<String, DeviceReadResponse>>() {}.type
                     val devices: HashMap<String, DeviceReadResponse> =
                         gson.fromJson(localBody, typeToken)
-                    onRequestSuccess(devices)
 
-                } catch (e: Exception) {
-                    onRequestFailure(e)
+                    onRequestSuccess(devices)
                 }
             }
         }
@@ -61,8 +51,7 @@ internal class DeviceRepository {
 
     fun registerDevice(
         device: DeviceRegistrationRequest,
-        onRequestFailure: (Exception) -> Unit,
-        onRequestSuccess: (DeviceRegistrationResponse) -> Unit
+        onRequestSuccess: (DeviceRegistrationResponse) -> Unit = {}
     ) {
         val body = gson.toJson(device).toRequestBody(applicationJson)
 
@@ -73,20 +62,51 @@ internal class DeviceRepository {
 
         val response = object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                onRequestFailure(e)
+                e.printStackTrace()
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val localBody = response.body?.string() ?: ""
+                response.use {
+                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
 
-                try {
+                    val localBody = response.body?.string() ?: ""
+
                     val typeToken = object : TypeToken<DeviceRegistrationResponse>() {}.type
                     val deviceRegistrationResponse: DeviceRegistrationResponse =
                         gson.fromJson(localBody, typeToken)
+
                     onRequestSuccess(deviceRegistrationResponse)
 
-                } catch (e: Exception) {
-                    onRequestFailure(e)
+                }
+            }
+        }
+
+        httpClient.newCall(request)
+            .enqueue(response)
+    }
+
+    fun removeDevice(
+        id: String,
+        onRequestSuccess: () -> Unit = {}
+    ) {
+        val requestUrl = "https://ecowatt-database-default-rtdb.firebaseio.com/devices/$id.json"
+
+        val request = Request.Builder()
+            .url(requestUrl)
+            .delete()
+            .build()
+
+        val response = object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                response.use {
+                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
+
+                    Log.i("ECOWATT", requestUrl)
+                    onRequestSuccess()
                 }
             }
         }

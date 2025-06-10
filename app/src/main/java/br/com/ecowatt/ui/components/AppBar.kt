@@ -24,20 +24,19 @@ import br.com.ecowatt.ui.theme.EcoWattTheme
  *
  * @param modifier The [Modifier] for this composable.
  * @param goBackFn Handles the back navigation action.
- * @param canNavigateBack Indicates if the back navigation is enabled.
+ * @param isChildScreen Indicates if the back navigation is enabled.
  * @param currentScreen The current [OldEnumScreens].
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun EcoWattTopBar(
     title: String,
-    canNavigateBack: Boolean = false,
-    goBackFn: () -> Unit = {}
+    goBackFn: (() -> Unit)? = null
 ) {
     TopAppBar(
         title = { Text(title) },
         navigationIcon = {
-            if (canNavigateBack) {
+            if (goBackFn != null) {
                 IconButton(onClick = goBackFn) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,

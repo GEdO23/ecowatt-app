@@ -1,40 +1,55 @@
 package br.com.ecowatt.ui.viewmodel
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import br.com.ecowatt.data.dto.request.DeviceRegistrationRequest
 import br.com.ecowatt.data.repo.DeviceRepository
 import br.com.ecowatt.models.device.Device
+import br.com.ecowatt.models.device.DeviceId
+import kotlinx.coroutines.launch
 
 internal class DevicesViewModel : ViewModel() {
     private val repo = DeviceRepository()
-    val devicesList: MutableList<Device> = mutableListOf()
 
-    fun loadDevices(
-        onRequestSuccess: () -> Unit = {},
-        onRequestFailure: (Exception) -> Unit = {}
-    ) {
+    var devicesList: MutableList<Device> = mutableStateListOf()
+        private set
+
+    fun loadDevices() = viewModelScope.launch {
         repo.getAllDevices(
             onRequestSuccess = { hashmap ->
-                devicesList.clear()
-                hashmap.forEach {
-                    val device = it.value.toDevice(id = it.key)
+                clearLocalDeviceList()
+                
+                hashmap.forEach { (key, value) ->
+                    val device = value.toEntity(id = DeviceId(key))
                     devicesList.add(device)
                 }
-                onRequestSuccess()
-            },
-            onRequestFailure = onRequestFailure
+            }
         )
     }
+
 
     fun registerDevice(
         device: DeviceRegistrationRequest,
-        onRequestSuccess: () -> Unit = {},
-        onRequestFailure: (Exception) -> Unit = {}
-    ) {
+        onRequestSuccess: () -> Unit = {}
+    ) = viewModelScope.launch {
         repo.registerDevice(
             device = device,
-            onRequestFailure = onRequestFailure,
             onRequestSuccess = { onRequestSuccess() }
         )
     }
+
+    fun removeDevice(id: DeviceId) = viewModelScope.launch {
+        repo.removeDevice(
+            id = id.value,
+            onRequestSuccess = {
+                removeDeviceFromLocalList(id)
+            }
+        )
+    }
+
+    private fun clearLocalDeviceList() = devicesList.clear()
+
+    private fun removeDeviceFromLocalList(id: DeviceId) =
+        devicesList.removeAll { device -> device.id == id }
 }

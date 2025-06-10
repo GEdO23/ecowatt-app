@@ -52,15 +52,12 @@ internal class MainActivity : ComponentActivity() {
                     }
 
                     composable(route = Screen.SignUpScreen.route) {
-                        Scaffold(
-                            topBar = {
-                                EcoWattTopBar(
-                                    title = stringResource(R.string.screen_title_signup),
-                                    canNavigateBack = true,
-                                    goBackFn = { navController.navigateUp() }
-                                )
-                            }
-                        ) { innerPadding ->
+                        Scaffold(topBar = {
+                            EcoWattTopBar(
+                                title = stringResource(R.string.screen_title_signup),
+                                goBackFn = { navController.navigateUp() }
+                            )
+                        }) { innerPadding ->
                             SignUpScreen(
                                 modifier = Modifier.padding(innerPadding),
                                 onSubmit = {
@@ -75,15 +72,12 @@ internal class MainActivity : ComponentActivity() {
                     }
 
                     composable(route = Screen.SignInScreen.route) {
-                        Scaffold(
-                            topBar = {
-                                EcoWattTopBar(
-                                    title = stringResource(R.string.screen_title_signin),
-                                    canNavigateBack = true,
-                                    goBackFn = { navController.navigateUp() }
-                                )
-                            }
-                        ) { innerPadding ->
+                        Scaffold(topBar = {
+                            EcoWattTopBar(
+                                title = stringResource(R.string.screen_title_signin),
+                                goBackFn = { navController.navigateUp() }
+                            )
+                        }) { innerPadding ->
                             SignInScreen(
                                 modifier = Modifier.padding(innerPadding),
                                 onSubmit = {
@@ -111,26 +105,24 @@ internal class MainActivity : ComponentActivity() {
 
                     composable(route = Screen.DevicesListScreen.route) {
                         devicesViewModel.loadDevices()
-                        
-                        Scaffold { innerPadding ->
+
+                        Scaffold(topBar = { EcoWattTopBar(title = "Devices List") }) { innerPadding ->
                             DevicesListScreen(
                                 modifier = Modifier.padding(innerPadding),
                                 devices = devicesViewModel.devicesList,
-                                onFabClick = { navController.navigate(Screen.DeviceRegistrationScreen.route) }
+                                onFabClick = { navController.navigate(Screen.DeviceRegistrationScreen.route) },
+                                onRemove = { id -> devicesViewModel.removeDevice(id) }
                             )
                         }
                     }
 
                     composable(route = Screen.DeviceRegistrationScreen.route) {
-                        Scaffold(
-                            topBar = {
-                                EcoWattTopBar(
-                                    title = stringResource(R.string.screen_title_register_device),
-                                    canNavigateBack = true,
-                                    goBackFn = { navController.navigateUp() }
-                                )
-                            }
-                        ) { innerPadding ->
+                        Scaffold(topBar = {
+                            EcoWattTopBar(
+                                title = stringResource(R.string.screen_title_register_device),
+                                goBackFn = { navController.navigateUp() }
+                            )
+                        }) { innerPadding ->
                             DeviceRegistrationScreen(
                                 modifier = Modifier.padding(innerPadding),
                                 onSubmit = {

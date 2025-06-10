@@ -7,5 +7,8 @@ data class ConsumptionReadResponse(
     val value: Int,
     val timestamp: Int
 ) {
-    fun toConsumption(): Consumption = Consumption(value.toUInt(), Date(timestamp.toLong()))
+    fun toEntity(): Consumption = Consumption(
+        value = value.toUInt(),
+        timestamp = Date(timestamp.toLong())
+    )
 }

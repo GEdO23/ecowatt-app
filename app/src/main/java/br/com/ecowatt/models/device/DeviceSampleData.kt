@@ -15,7 +15,7 @@ internal object DeviceSampleData {
     }
 
     private val device1 = Device(
-        id = "0001",
+        id = DeviceId("0001"),
         name = "Geladeira",
         location = DeviceLocations.KITCHEN.value,
         type = DeviceTypes.ELETRO.value,
@@ -24,7 +24,7 @@ internal object DeviceSampleData {
     )
 
     private val device2 = Device(
-        id = "0002",
+        id = DeviceId("0002"),
         name = "Playstation 5",
         location = DeviceLocations.LIVING_ROOM.value,
         type = DeviceTypes.GAME.value,
@@ -33,7 +33,7 @@ internal object DeviceSampleData {
     )
 
     private val device3 = Device(
-        id = "0003",
+        id = DeviceId("0003"),
         name = "Televisão de quarto",
         location = DeviceLocations.BEDROOM.value,
         type = DeviceTypes.OTHERS.value,

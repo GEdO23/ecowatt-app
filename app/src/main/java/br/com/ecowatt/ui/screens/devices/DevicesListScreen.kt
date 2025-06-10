@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.ecowatt.R
 import br.com.ecowatt.models.device.Device
+import br.com.ecowatt.models.device.DeviceId
 import br.com.ecowatt.models.device.DeviceSampleData
 import br.com.ecowatt.ui.components.DeviceListItem
 import br.com.ecowatt.ui.theme.EcoWattTheme
@@ -27,12 +28,20 @@ import br.com.ecowatt.ui.theme.EcoWattTheme
 fun DevicesListScreen(
     modifier: Modifier = Modifier,
     devices: List<Device>,
-    onFabClick: () -> Unit = {}
+    onFabClick: () -> Unit = {},
+    onRemove: (DeviceId) -> Unit = {}
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         LazyColumn {
             items(items = devices) { device ->
-                DeviceListItem(device = device)
+                DeviceListItem(
+                    headlineText = device.name,
+                    supportText = stringResource(
+                        R.string.energy_consumption_per_minute,
+                        device.getLatestConsumption()?.value ?: 0,
+                        stringResource(R.string.energy_unit)
+                    ), onRemove = { onRemove(device.id) }
+                )
             }
         }
 
