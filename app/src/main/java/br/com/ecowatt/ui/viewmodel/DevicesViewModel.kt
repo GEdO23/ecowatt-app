@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.ecowatt.data.dto.request.DeviceRegistrationRequest
+import br.com.ecowatt.data.dto.request.DeviceUpdateRequest
 import br.com.ecowatt.data.repo.DeviceRepository
 import br.com.ecowatt.models.device.Device
 import br.com.ecowatt.models.device.DeviceId
@@ -47,6 +48,20 @@ internal class DevicesViewModel : ViewModel() {
             id = id.value,
             onRequestSuccess = {
                 removeDeviceFromLocalList(id)
+            }
+        )
+    }
+
+    fun updateDevice(
+        id: DeviceId,
+        updatedDevice: DeviceUpdateRequest,
+        onRequestSuccess: () -> Unit
+    ) = viewModelScope.launch {
+        repo.updateDevice(
+            id = id,
+            device = updatedDevice,
+            onRequestSuccess = {
+                loadDevices()
             }
         )
     }

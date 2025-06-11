@@ -2,10 +2,12 @@ package br.com.ecowatt.data.repo
 
 import android.util.Log
 import br.com.ecowatt.data.dto.request.DeviceRegistrationRequest
+import br.com.ecowatt.data.dto.request.DeviceUpdateRequest
 import br.com.ecowatt.data.dto.response.DeviceReadResponse
 import br.com.ecowatt.data.dto.response.DeviceRegistrationResponse
 import br.com.ecowatt.data.repo.Constants.applicationJson
 import br.com.ecowatt.data.repo.Constants.httpClient
+import br.com.ecowatt.models.device.DeviceId
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import okhttp3.Call
@@ -106,6 +108,37 @@ internal class DeviceRepository {
                     if (!response.isSuccessful) throw IOException("Unexpected code $response")
 
                     Log.i("ECOWATT", requestUrl)
+                    onRequestSuccess()
+                }
+            }
+        }
+
+        httpClient.newCall(request)
+            .enqueue(response)
+    }
+
+    fun updateDevice(
+        id: DeviceId,
+        device: DeviceUpdateRequest,
+        onRequestSuccess: () -> Unit = {}
+    ) {
+        val requestUrl =
+            "https://ecowatt-database-default-rtdb.firebaseio.com/devices/${id.value}.json"
+        val body = gson.toJson(device).toRequestBody(applicationJson)
+
+        val request = Request.Builder()
+            .url(requestUrl)
+            .put(body)
+            .build()
+
+        val response = object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                response.use {
+                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
                     onRequestSuccess()
                 }
             }

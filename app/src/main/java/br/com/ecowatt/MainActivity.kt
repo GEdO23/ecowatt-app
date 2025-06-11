@@ -16,6 +16,7 @@ import br.com.ecowatt.models.user.UserSampleData
 import br.com.ecowatt.ui.components.EcoWattTopBar
 import br.com.ecowatt.ui.navigation.Screen.DeviceDetailsScreen
 import br.com.ecowatt.ui.navigation.Screen.DeviceRegistrationScreen
+import br.com.ecowatt.ui.navigation.Screen.DeviceUpdateScreen
 import br.com.ecowatt.ui.navigation.Screen.DevicesListScreen
 import br.com.ecowatt.ui.navigation.Screen.HomeScreen
 import br.com.ecowatt.ui.navigation.Screen.SignInScreen
@@ -24,6 +25,7 @@ import br.com.ecowatt.ui.navigation.Screen.WelcomeScreen
 import br.com.ecowatt.ui.screens.HomeScreen
 import br.com.ecowatt.ui.screens.devices.DeviceDetailsScreen
 import br.com.ecowatt.ui.screens.devices.DeviceRegistrationScreen
+import br.com.ecowatt.ui.screens.devices.DeviceUpdateScreen
 import br.com.ecowatt.ui.screens.devices.DevicesListScreen
 import br.com.ecowatt.ui.screens.onboarding.SignInScreen
 import br.com.ecowatt.ui.screens.onboarding.SignUpScreen
@@ -138,7 +140,7 @@ internal class MainActivity : ComponentActivity() {
                                 modifier = Modifier.padding(innerPadding),
                                 onSubmit = {
                                     devicesViewModel.registerDevice(it, onRequestSuccess = {
-                                        runOnUiThread { navController.navigateUp() }
+                                        runOnUiThread { navController.popBackStack() }
                                     })
                                 }
                             )
@@ -154,7 +156,29 @@ internal class MainActivity : ComponentActivity() {
                         }) { innerPadding ->
                             DeviceDetailsScreen(
                                 modifier = Modifier.padding(innerPadding),
-                                device = devicesViewModel.currentDevice.value
+                                device = devicesViewModel.currentDevice.value,
+                                onFabClick = { navController.navigate(DeviceUpdateScreen.route) }
+                            )
+                        }
+                    }
+
+                    composable(route = DeviceUpdateScreen.route) {
+                        Scaffold(topBar = {
+                            EcoWattTopBar(
+                                title = stringResource(R.string.screen_title_update_device),
+                                goBackFn = { navController.navigateUp() }
+                            )
+                        }) { innerPadding ->
+                            DeviceUpdateScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                device = devicesViewModel.currentDevice.value,
+                                onSubmit = { id, device ->
+                                    devicesViewModel.updateDevice(
+                                        id = id,
+                                        updatedDevice = device,
+                                        onRequestSuccess = { navController.popBackStack() }
+                                    )
+                                }
                             )
                         }
                     }
