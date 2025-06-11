@@ -14,8 +14,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import br.com.ecowatt.models.user.UserSampleData
 import br.com.ecowatt.ui.components.EcoWattTopBar
-import br.com.ecowatt.ui.navigation.Screen
+import br.com.ecowatt.ui.navigation.Screen.DeviceDetailsScreen
+import br.com.ecowatt.ui.navigation.Screen.DeviceRegistrationScreen
+import br.com.ecowatt.ui.navigation.Screen.DevicesListScreen
+import br.com.ecowatt.ui.navigation.Screen.HomeScreen
+import br.com.ecowatt.ui.navigation.Screen.SignInScreen
+import br.com.ecowatt.ui.navigation.Screen.SignUpScreen
+import br.com.ecowatt.ui.navigation.Screen.WelcomeScreen
 import br.com.ecowatt.ui.screens.HomeScreen
+import br.com.ecowatt.ui.screens.devices.DeviceDetailsScreen
 import br.com.ecowatt.ui.screens.devices.DeviceRegistrationScreen
 import br.com.ecowatt.ui.screens.devices.DevicesListScreen
 import br.com.ecowatt.ui.screens.onboarding.SignInScreen
@@ -39,19 +46,19 @@ internal class MainActivity : ComponentActivity() {
 
                 NavHost(
                     navController = navController,
-                    startDestination = Screen.WelcomeScreen.route
+                    startDestination = WelcomeScreen.route
                 ) {
-                    composable(route = Screen.WelcomeScreen.route) {
+                    composable(route = WelcomeScreen.route) {
                         Scaffold { innerPadding ->
                             WelcomeScreen(
                                 modifier = Modifier.padding(innerPadding),
-                                onSignUp = { navController.navigate(Screen.SignUpScreen.route) },
-                                onSignIn = { navController.navigate(Screen.SignInScreen.route) }
+                                onSignUp = { navController.navigate(SignUpScreen.route) },
+                                onSignIn = { navController.navigate(SignInScreen.route) }
                             )
                         }
                     }
 
-                    composable(route = Screen.SignUpScreen.route) {
+                    composable(route = SignUpScreen.route) {
                         Scaffold(topBar = {
                             EcoWattTopBar(
                                 title = stringResource(R.string.screen_title_signup),
@@ -63,7 +70,7 @@ internal class MainActivity : ComponentActivity() {
                                 onSubmit = {
                                     authViewModel.signUp(it, onSuccess = {
                                         runOnUiThread {
-                                            navController.navigate(Screen.HomeScreen.route)
+                                            navController.navigate(HomeScreen.route)
                                         }
                                     })
                                 }
@@ -71,7 +78,7 @@ internal class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    composable(route = Screen.SignInScreen.route) {
+                    composable(route = SignInScreen.route) {
                         Scaffold(topBar = {
                             EcoWattTopBar(
                                 title = stringResource(R.string.screen_title_signin),
@@ -83,7 +90,7 @@ internal class MainActivity : ComponentActivity() {
                                 onSubmit = {
                                     authViewModel.signIn(it, onSuccess = {
                                         runOnUiThread {
-                                            navController.navigate(Screen.HomeScreen.route)
+                                            navController.navigate(HomeScreen.route)
                                         }
                                     })
                                 }
@@ -91,32 +98,36 @@ internal class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    composable(route = Screen.HomeScreen.route) {
+                    composable(route = HomeScreen.route) {
                         Scaffold { innerPadding ->
                             HomeScreen(
                                 modifier = Modifier.padding(innerPadding),
                                 user = authViewModel.currentUser ?: UserSampleData.user,
                                 onDevicesListClick = {
-                                    navController.navigate(Screen.DevicesListScreen.route)
+                                    navController.navigate(DevicesListScreen.route)
                                 }
                             )
                         }
                     }
 
-                    composable(route = Screen.DevicesListScreen.route) {
+                    composable(route = DevicesListScreen.route) {
                         devicesViewModel.loadDevices()
 
                         Scaffold(topBar = { EcoWattTopBar(title = "Devices List") }) { innerPadding ->
                             DevicesListScreen(
                                 modifier = Modifier.padding(innerPadding),
-                                devices = devicesViewModel.devicesList,
-                                onFabClick = { navController.navigate(Screen.DeviceRegistrationScreen.route) },
+                                devicesList = devicesViewModel.devicesList,
+                                onItemClick = {
+                                    devicesViewModel.currentDevice.value = it
+                                    navController.navigate(DeviceDetailsScreen.route)
+                                },
+                                onFabClick = { navController.navigate(DeviceRegistrationScreen.route) },
                                 onRemove = { id -> devicesViewModel.removeDevice(id) }
                             )
                         }
                     }
 
-                    composable(route = Screen.DeviceRegistrationScreen.route) {
+                    composable(route = DeviceRegistrationScreen.route) {
                         Scaffold(topBar = {
                             EcoWattTopBar(
                                 title = stringResource(R.string.screen_title_register_device),
@@ -127,11 +138,23 @@ internal class MainActivity : ComponentActivity() {
                                 modifier = Modifier.padding(innerPadding),
                                 onSubmit = {
                                     devicesViewModel.registerDevice(it, onRequestSuccess = {
-                                        runOnUiThread {
-                                            navController.navigateUp()
-                                        }
+                                        runOnUiThread { navController.navigateUp() }
                                     })
                                 }
+                            )
+                        }
+                    }
+
+                    composable(route = DeviceDetailsScreen.route) {
+                        Scaffold(topBar = {
+                            EcoWattTopBar(
+                                title = "Device Details",
+                                goBackFn = { navController.navigateUp() }
+                            )
+                        }) { innerPadding ->
+                            DeviceDetailsScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                device = devicesViewModel.currentDevice.value
                             )
                         }
                     }

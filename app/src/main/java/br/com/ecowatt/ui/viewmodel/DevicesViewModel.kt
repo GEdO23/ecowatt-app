@@ -1,6 +1,7 @@
 package br.com.ecowatt.ui.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.ecowatt.data.dto.request.DeviceRegistrationRequest
@@ -12,14 +13,16 @@ import kotlinx.coroutines.launch
 internal class DevicesViewModel : ViewModel() {
     private val repo = DeviceRepository()
 
-    var devicesList: MutableList<Device> = mutableStateListOf()
+    var devicesList = mutableStateListOf<Device>()
         private set
+
+    var currentDevice = mutableStateOf<Device?>(null)
 
     fun loadDevices() = viewModelScope.launch {
         repo.getAllDevices(
             onRequestSuccess = { hashmap ->
                 clearLocalDeviceList()
-                
+
                 hashmap.forEach { (key, value) ->
                     val device = value.toEntity(id = DeviceId(key))
                     devicesList.add(device)

@@ -15,5 +15,7 @@ data class Device(
     val consumptionLimit: UInt,
     val consumptions: List<Consumption>
 ) {
-    fun getLatestConsumption(): Consumption? = consumptions.firstOrNull();
+    val getLatestConsumption: Consumption? = consumptions.firstOrNull();
+    val latestConsumptionValue: UInt = getLatestConsumption?.value ?: 0u
+    val isConsumptionHigh: Boolean = latestConsumptionValue >= consumptionLimit
 }

@@ -1,5 +1,6 @@
 package br.com.ecowatt.ui.screens.devices
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -27,20 +28,23 @@ import br.com.ecowatt.ui.theme.EcoWattTheme
 @Composable
 fun DevicesListScreen(
     modifier: Modifier = Modifier,
-    devices: List<Device>,
+    devicesList: List<Device>,
+    onItemClick: (Device) -> Unit = {},
     onFabClick: () -> Unit = {},
     onRemove: (DeviceId) -> Unit = {}
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         LazyColumn {
-            items(items = devices) { device ->
+            items(devicesList, key = { (id) -> id.value }) { device ->
                 DeviceListItem(
                     headlineText = device.name,
                     supportText = stringResource(
                         R.string.energy_consumption_per_minute,
-                        device.getLatestConsumption()?.value ?: 0,
+                        device.latestConsumptionValue,
                         stringResource(R.string.energy_unit)
-                    ), onRemove = { onRemove(device.id) }
+                    ),
+                    modifier = Modifier.clickable { onItemClick(device) },
+                    onRemove = { onRemove(device.id) }
                 )
             }
         }
@@ -66,7 +70,7 @@ private fun DevicesListScreenPreview() {
         Scaffold(modifier = Modifier.statusBarsPadding()) { innerPadding ->
             DevicesListScreen(
                 modifier = Modifier.padding(innerPadding),
-                devices = DeviceSampleData.devicesList
+                devicesList = DeviceSampleData.devicesList
             )
         }
     }

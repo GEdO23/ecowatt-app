@@ -16,8 +16,8 @@ import androidx.compose.ui.unit.dp
 import br.com.ecowatt.R
 import br.com.ecowatt.models.user.User
 import br.com.ecowatt.models.user.UserSampleData
-import br.com.ecowatt.ui.components.SubTitle
-import br.com.ecowatt.ui.components.Title
+import br.com.ecowatt.ui.components.Text.SubTitle
+import br.com.ecowatt.ui.components.Text.Title
 import br.com.ecowatt.ui.components.form.EcowattButton
 import br.com.ecowatt.ui.theme.EcoWattTheme
 

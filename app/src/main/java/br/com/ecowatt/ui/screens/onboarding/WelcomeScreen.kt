@@ -15,8 +15,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.ecowatt.R
-import br.com.ecowatt.ui.components.LargeTitle
-import br.com.ecowatt.ui.components.SubTitle
+import br.com.ecowatt.ui.components.Text.LargeTitle
+import br.com.ecowatt.ui.components.Text.SubTitle
 import br.com.ecowatt.ui.components.form.EcowattButton
 import br.com.ecowatt.ui.theme.EcoWattTheme
 

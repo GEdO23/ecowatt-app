@@ -1,5 +1,7 @@
 package br.com.ecowatt.models.device
 
+import java.util.Date
+
 internal object DeviceSampleData {
 
     private enum class DeviceLocations(val value: String) {
@@ -14,16 +16,18 @@ internal object DeviceSampleData {
         OTHERS("Outros")
     }
 
-    private val device1 = Device(
+    val device1 = Device(
         id = DeviceId("0001"),
         name = "Geladeira",
         location = DeviceLocations.KITCHEN.value,
         type = DeviceTypes.ELETRO.value,
         consumptionLimit = 250u,
-        consumptions = emptyList()
+        consumptions = listOf(
+            Consumption(300u, Date())
+        )
     )
 
-    private val device2 = Device(
+    val device2 = Device(
         id = DeviceId("0002"),
         name = "Playstation 5",
         location = DeviceLocations.LIVING_ROOM.value,
@@ -32,7 +36,7 @@ internal object DeviceSampleData {
         consumptions = emptyList()
     )
 
-    private val device3 = Device(
+    val device3 = Device(
         id = DeviceId("0003"),
         name = "Televisão de quarto",
         location = DeviceLocations.BEDROOM.value,
